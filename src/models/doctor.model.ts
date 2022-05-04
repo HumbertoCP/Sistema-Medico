@@ -1,9 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { SpecialityModel } from './speciality.model'
 
 @Entity()
 export class DoctorModel {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Column({ length: 120 })
     name: string;
@@ -11,8 +12,9 @@ export class DoctorModel {
     @Column({ unique: true })
     crm: string
 
-    /* @Column()
-    speciality: JSON */
+    @ManyToMany(() => SpecialityModel/* , { cascade: true } */)
+    @JoinTable()
+    speciality: SpecialityModel[]
 
     @Column()
     phoneNumber: string

@@ -27,4 +27,5 @@ export class DoctorSchema {
     district: string
 
     street: string
+
 }

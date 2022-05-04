@@ -1,3 +1,4 @@
+import { SpecialityModel } from './../models/speciality.model';
 import {
     Body,
     Controller,
@@ -13,8 +14,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DoctorModel } from 'src/models/doctor.model';
 import { DoctorSchema } from 'src/schemas/doctor.schema';
-//const postalCode = require('./../postalCode.js')
-var postalCode = require('busca-cep');
+
+const postalCode = require('busca-cep');
 
 @Controller('/doctor')
 export class DoctorController {
@@ -23,13 +24,13 @@ export class DoctorController {
     ) { }
 
     @Post()
-    public async create(@Body() body: DoctorSchema): Promise<DoctorModel> {
+    public async create(@Body() body: DoctorModel): Promise<DoctorModel> {
         
         var adressResponse = postalCode(body.postalCode, {sync: true});
         if (adressResponse.hasError) {
             console.log(`Erro: statusCode ${adressResponse.statusCode} e mensagem ${adressResponse.message}`);
         }
-        console.log(adressResponse)
+        //console.log(adressResponse)
 
         let doctor = body
         doctor.city = adressResponse.localidade
@@ -37,7 +38,19 @@ export class DoctorController {
         doctor.district = adressResponse.bairro
         doctor.street = adressResponse.logradouro
 
-        //doctor.city = 'a'
+        /* console.log(body.speciality) */
+        
+        const Speciality = new SpecialityModel()
+
+        body.speciality.forEach(element => {
+            Speciality.speciality = element.speciality
+            doctor.speciality.push(Speciality)
+        });
+
+        
+
+        console.log(doctor)
+
         return this.model.save(doctor);
     }
 
