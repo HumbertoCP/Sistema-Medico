@@ -1,3 +1,4 @@
+import { IsPostalCode } from 'class-validator';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
 import { SpecialityModel } from './speciality.model'
 
@@ -12,7 +13,7 @@ export class DoctorModel {
     @Column({ unique: true })
     crm: string
 
-    @ManyToMany(() => SpecialityModel/* , { cascade: true } */)
+    @ManyToMany(() => SpecialityModel, { cascade: true })
     @JoinTable()
     speciality: SpecialityModel[]
 
@@ -23,6 +24,7 @@ export class DoctorModel {
     landlineNumber: string
 
     @Column()
+    @IsPostalCode('BR')
     postalCode: string
 
     @Column({ default: null })
