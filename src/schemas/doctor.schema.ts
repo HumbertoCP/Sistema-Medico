@@ -1,4 +1,5 @@
 import { IsString, MaxLength, IsNumberString, IsPostalCode, IsPhoneNumber } from 'class-validator';
+import { BeforeInsert } from 'typeorm';
 
 export class DoctorSchema {
     @IsString()
@@ -8,6 +9,8 @@ export class DoctorSchema {
     @MaxLength(7)
     @IsNumberString()
     crm: string;
+
+    specialityID: any
 
     @IsNumberString()
     @IsPhoneNumber('BR')
@@ -27,5 +30,4 @@ export class DoctorSchema {
     district: string
 
     street: string
-
 }

@@ -4,6 +4,8 @@ import {
     Controller,
     Delete,
     Get,
+    HttpException,
+    HttpStatus,
     NotFoundException,
     Param,
     ParseIntPipe,
@@ -11,7 +13,7 @@ import {
     Put,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getRepository, Repository } from 'typeorm';
+import { createQueryBuilder, getRepository, Repository } from 'typeorm';
 import { DoctorModel } from 'src/models/doctor.model';
 import { DoctorSchema } from 'src/schemas/doctor.schema';
 import { instanceToPlain } from 'class-transformer';
@@ -25,8 +27,7 @@ export class DoctorController {
     ) { }
 
     @Post()
-    public async create(@Body() body: any): Promise<DoctorModel> {
-
+    public async create(@Body() body: DoctorSchema): Promise<DoctorModel> {
         var adressResponse = postalCode(body.postalCode, { sync: true });
         if (adressResponse.hasError) {
             console.log(`Erro: statusCode ${adressResponse.statusCode} e mensagem ${adressResponse.message}`);
@@ -45,7 +46,7 @@ export class DoctorController {
 
         //console.log(body.specialityID)
 
-        // Recebe o id da especialidade já previamente cadastrada => "specialityID": [1, 2, 3, 4]
+        // Receives de ID from speciality previusly registered => "specialityID": [1, 2, 3, 4]
         doctor.speciality = await Promise.all(body.specialityID.map(async (element: number) => {
 
             // Search this id on the table of specialty and returns to doctor.speciality
@@ -59,13 +60,21 @@ export class DoctorController {
 
         console.log(doctor)
         return this.model.save(doctor);
+
+
     }
 
     @Get(':id')
     public async getOne(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<DoctorModel> {
-        const doctor = await this.model.findOne({ where: { id } });
+    ): Promise<any> {
+        //const doctor = await this.model.findOne({ where: { id } });
+
+        const doctor = await getRepository(DoctorModel)
+                            .createQueryBuilder("doctor_model")
+                            .leftJoinAndSelect("doctor_model.speciality", "speciality_model")
+                            .where("doctor_model.id = :id", { id })
+                            .getOne()
 
         if (!doctor) {
             throw new NotFoundException(`No doctor was found with this id: ${id}`);
@@ -75,8 +84,10 @@ export class DoctorController {
     }
 
     @Get()
-    public async getAll(): Promise<DoctorModel[]> {
-        return this.model.find({ where: { isActive: true } });
+    public async getAll(): Promise<any> {
+        const doctor = await getRepository(DoctorModel).createQueryBuilder("doctor_model").leftJoinAndSelect("doctor_model.speciality", "speciality_model").getMany()
+
+        return doctor//this.model.find({ where: { isActive: true } });
     }
 
     @Put(':id')

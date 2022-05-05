@@ -1,5 +1,6 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { IsPostalCode } from 'class-validator';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, BeforeInsert } from 'typeorm';
 import { SpecialityModel } from './speciality.model'
 
 @Entity()
@@ -41,4 +42,14 @@ export class DoctorModel {
 
     @Column({ default: true, select: false })
     isActive: boolean
+
+    @BeforeInsert()
+    beforeInsert(){
+        if(this.speciality.length < 2){
+            throw new HttpException({
+                status: HttpStatus.BAD_REQUEST,
+                error: 'Um médico precisa ter no mínimo duas especialidades!',
+            }, HttpStatus.BAD_REQUEST);
+        }          
+    }
 }
