@@ -9,8 +9,10 @@ import {
     NotFoundException,
     Param,
     ParseIntPipe,
+    Patch,
     Post,
     Put,
+    Req,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createQueryBuilder, getRepository, Repository } from 'typeorm';
@@ -20,7 +22,7 @@ import { instanceToPlain } from 'class-transformer';
 
 const postalCode = require('busca-cep');
 
-@Controller('/doctor')
+@Controller('/doctors')
 export class DoctorController {
     constructor(
         @InjectRepository(DoctorModel) private model: Repository<DoctorModel>,
@@ -71,10 +73,11 @@ export class DoctorController {
         //const doctor = await this.model.findOne({ where: { id } });
 
         const doctor = await getRepository(DoctorModel)
-                            .createQueryBuilder("doctor_model")
-                            .leftJoinAndSelect("doctor_model.speciality", "speciality_model")
-                            .where("doctor_model.id = :id", { id })
-                            .getOne()
+            .createQueryBuilder("doctor_model")
+            .leftJoinAndSelect("doctor_model.speciality", "speciality_model")
+            .where("doctor_model.id = :id", { id })
+            .andWhere("doctor_model.isActive = 1")
+            .getOne()
 
         if (!doctor) {
             throw new NotFoundException(`No doctor was found with this id: ${id}`);
@@ -84,13 +87,29 @@ export class DoctorController {
     }
 
     @Get()
-    public async getAll(): Promise<any> {
-        const doctor = await getRepository(DoctorModel).createQueryBuilder("doctor_model").leftJoinAndSelect("doctor_model.speciality", "speciality_model").getMany()
+    public async getAll(@Req() request): Promise<any> {
+        console.log(request.query)
 
-        return doctor//this.model.find({ where: { isActive: true } });
+        let speciality_id = [1, 2, 3, 4, 5, 6, 7, 8, 9 , 10]
+        if (request.query.speciality_id) {
+            speciality_id = request.query.speciality_id
+            delete request.query.speciality_id
+            //console.log(speciality_id)
+        }
+
+        const doctor = await getRepository(DoctorModel)
+            .createQueryBuilder("doctor_model")
+            .leftJoinAndSelect("doctor_model.speciality", `speciality_model` ) //  IN (${speciality_id})
+            .where("doctor_model.isActive = 1")
+            .andWhere(`speciality_model.id  IN (${speciality_id})`)
+            .andWhere(request.query)
+            //
+            .getMany()
+
+        return doctor
     }
 
-    @Put(':id')
+    @Patch(':id')
     public async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: DoctorSchema,
