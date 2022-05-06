@@ -7,4 +7,4 @@ import { DoctorModel } from 'src/models/doctor.model';
     imports: [TypeOrmModule.forFeature([DoctorModel])],
     controllers: [DoctorController],
 })
-export class DoctorModule { }
+export class DoctorModule {  }
