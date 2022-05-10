@@ -1,14 +1,19 @@
 
 
 # Backend de um sistema médico que suporta as seguintes operações:
- - Insert
- - Update
- - Select
- - Soft Delete
+- Insert
+- Update
+- Select
+- Soft Delete
 
 ## Tecnologias
 
-O projeto foi desenvolvido em Node.JS, NestJS (Framework do Node.JS, em Typescript. Para integração com o banco de dados foi utilizado o TypeORM e o banco de dados, MySQL.
+O projeto foi desenvolvido em :
+- Node.JS
+- NestJS (Framework do Node.JS)
+- Typescript
+- TypeORM
+- MySQL
 
 ## Executando o projeto
 
