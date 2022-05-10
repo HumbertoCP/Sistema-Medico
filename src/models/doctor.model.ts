@@ -45,21 +45,17 @@ export class DoctorModel {
 
     @BeforeInsert()
     beforeInsert(){
+        console.log('chegou no before insert')
         if(this.speciality.length < 2){
-            throw new HttpException({
-                status: HttpStatus.BAD_REQUEST,
-                error: 'Um médico precisa ter no mínimo duas especialidades!',
-            }, HttpStatus.BAD_REQUEST);
-        }          
+            throw new Error('Um médico precisa ter no mínimo duas especialidades')
+        }     
+        console.log('saiu no before insert')     
     }
 
     @BeforeUpdate()
     beforeUpdate(){
         if(this.speciality.length < 2){
-            throw new HttpException({
-                status: HttpStatus.BAD_REQUEST,
-                error: 'Um médico precisa ter no mínimo duas especialidades!',
-            }, HttpStatus.BAD_REQUEST);
+            throw new Error('Um médico precisa ter no mínimo duas especialidades')
         }
     }
 }

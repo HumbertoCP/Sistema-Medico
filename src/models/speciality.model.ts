@@ -1,10 +1,8 @@
-import { DoctorModel } from 'src/models/doctor.model';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class SpecialityModel {
-    /* @ApiProperty({ enum: [
+    /* 
         'Alergologia',
         'Angiologia', 
         'Buco maxilo',
@@ -13,8 +11,7 @@ export class SpecialityModel {
         'Cirurgia cabeça e pescoço',
         'Cirurgia cardíaca',
         'Cirurgia de torax'
-    ]})
-    speciality: string */
+    */
 
     @PrimaryGeneratedColumn()
     id: number

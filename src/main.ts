@@ -4,13 +4,13 @@ import { AppModule } from './app.module';
 import { TransformInterceptor } from './interceptors/transform.interceptors';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('/api/v1');
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalInterceptors(new TransformInterceptor());
+    app.setGlobalPrefix('/api/v1');
+    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalInterceptors(new TransformInterceptor());
 
-  await app.listen(3000);
+    await app.listen(3000, '0.0.0.0');
 }
 
 bootstrap();
