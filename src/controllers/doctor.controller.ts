@@ -4,9 +4,6 @@ import {
     Controller,
     Delete,
     Get,
-    HttpException,
-    HttpStatus,
-    NotFoundException,
     Param,
     ParseIntPipe,
     Patch,
@@ -60,15 +57,22 @@ export class DoctorController {
                     .where("speciality_model.id = :element", { element })
                     .getMany()
 
-                console.log('primeiro return')
-                return instanceToPlain(spec)[0] // doctor.speciality need a object so instanceToPlain turns SpecialityModel into object, the [0] is because it returns an array of 1 item only
-            }))
-            console.log('Segundo return')
+                let specialities = instanceToPlain(spec)[0] // doctor.speciality need a object so instanceToPlain turns SpecialityModel into object, the [0] is because it returns an array of 1 item only
+                
+                if(specialities == null){
+                    throw new Error('O médico contém alguma(s) especialidade(s) inexistente(s)!')
+                }
 
-            return this.model.save(doctor);
+                return specialities
+            }))
+
+            const result = await this.model.save(doctor)
+            res.send({
+                status: 'success',
+                data: result
+            })
         }
         catch (err) {
-            console.log('catchou algum erro')
             res.status(400).json({
                 status: 'fail',
                 message: err.message
@@ -82,7 +86,6 @@ export class DoctorController {
         @Param('id', ParseIntPipe) id: number,
     ): Promise<any> {
         try {
-            //const doctor = await this.model.findOne({ where: { id } });
 
             const doctor = await getRepository(DoctorModel)
                 .createQueryBuilder("doctor_model")
@@ -95,8 +98,10 @@ export class DoctorController {
                 throw new Error(`No doctor was found with this id: ${id}`);
             }
 
-            console.log('chegou')
-            return doctor;
+            res.send({
+                status: 'success',
+                data: doctor
+            })
         }
         catch (err) {
             res.status(404).json({
@@ -107,23 +112,43 @@ export class DoctorController {
     }
 
     @Get()
-    public async getAll(@Req() request): Promise<any> {
+    public async getAll(@Req() request, @Res() res,): Promise<any> {
+        try{
+            let speciality_id = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] // Needs refactoring
+            if (request.query.speciality_id) {
+                speciality_id = request.query.speciality_id
+                delete request.query.speciality_id
+            }
 
-        let speciality_id = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] // Needs refactoring
-        if (request.query.speciality_id) {
-            speciality_id = request.query.speciality_id
-            delete request.query.speciality_id
+            let doctor
+            if(speciality_id){
+                doctor = await getRepository(DoctorModel)
+                .createQueryBuilder("doctor_model")
+                .leftJoinAndSelect("doctor_model.speciality", `speciality_model`)
+                .where("doctor_model.isActive = 1")
+                .andWhere(`speciality_model.id  IN (${speciality_id})`)
+                .andWhere(request.query)
+                .getMany()
+            } else {
+                doctor = await getRepository(DoctorModel)
+                .createQueryBuilder("doctor_model")
+                .leftJoinAndSelect("doctor_model.speciality", `speciality_model`)
+                .where("doctor_model.isActive = 1")
+                .andWhere(request.query)
+                .getMany()
+            }
+            
+            res.send({
+                status: 'success',
+                data: doctor
+            })
         }
-
-        const doctor = await getRepository(DoctorModel)
-            .createQueryBuilder("doctor_model")
-            .leftJoinAndSelect("doctor_model.speciality", `speciality_model`)
-            .where("doctor_model.isActive = 1")
-            .andWhere(`speciality_model.id  IN (${speciality_id})`)
-            .andWhere(request.query)
-            .getMany()
-
-        return doctor
+        catch (err) {
+            res.status(404).json({
+                status: 'fail',
+                message: err.message
+            });
+        }
     }
 
     @Patch(':id')
@@ -131,7 +156,7 @@ export class DoctorController {
         @Param('id', ParseIntPipe) id: number,
         @Body() body: DoctorSchema,
         @Res() res
-    ): Promise<DoctorModel> {
+    ): Promise<any> {
         try {
             const doctor = await this.model.createQueryBuilder("doctor_model")
                 .leftJoinAndSelect("doctor_model.speciality", `speciality_model`)
@@ -145,7 +170,10 @@ export class DoctorController {
 
             await this.model.update({ id }, body);
 
-            return doctor
+            res.send({
+                status: 'success',
+                data: doctor
+            })
         }
         catch (err) {
             res.status(404).json({
@@ -156,7 +184,7 @@ export class DoctorController {
     }
 
     @Delete(':id')
-    public async delete(@Param('id', ParseIntPipe) id: number, @Res() res): Promise<string> {
+    public async delete(@Param('id', ParseIntPipe) id: number, @Res() res): Promise<any> {
         const doctor = await this.model.findOne({ where: { id } });
 
         try {
@@ -167,7 +195,10 @@ export class DoctorController {
             //await this.model.delete(id);
             await this.model.update({ id }, { isActive: false });
 
-            return `Doctor deleted succesfully`;
+            res.send({
+                status: 'success',
+                data: null
+            });
         }
         catch (err) {
             res.status(404).json({

@@ -6,6 +6,6 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: 'gcb_test',
     synchronize: true,
-    entities: ['dist/models/*.model.js'],
+    entities: ['dist/models/*.model.js','dist/src/models/*.model.js'],
     logging: false,
 };
