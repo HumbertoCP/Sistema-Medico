@@ -14,6 +14,7 @@ O projeto foi desenvolvido em :
 - Typescript
 - TypeORM
 - MySQL
+- Docker
 
 ## Executando o projeto
 
