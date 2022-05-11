@@ -8,4 +8,8 @@ module.exports = {
     synchronize: true,
     entities: ['dist/models/*.model.js','dist/src/models/*.model.js'],
     logging: false,
+    migrations: ["src/migrations/*.[jt]*s"],
+    cli: {
+        migrationsDir: "src/migrations"
+    }
 };
