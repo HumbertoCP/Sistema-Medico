@@ -24,7 +24,7 @@ Para clonar o projeto:
 
 Na pasta raiz do projeto, crie um arquivo chamado ``.env`` e nele insira:
 
-``DB_USERNAME=<O nome do seu banco aqui>``
+``DB_USERNAME=<O nome do seu banco aqui>``<br>
 ``DB_PASSWROD=<A senha do seu banco aqui>``
 
 
