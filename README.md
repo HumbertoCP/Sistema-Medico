@@ -26,7 +26,7 @@ Tendo em sua máquina o Docker, Node.JS e o MySQL instalados, execute o comando:
 
 ``docker-compose up``
 
-### Migrations (Populando o banco)
+## Migrations (Populando o banco)
 
 Para popular o banco de dados com as especialidades médicas, após executar o projeto, com o cmd na pasta, execute o comando:
 
