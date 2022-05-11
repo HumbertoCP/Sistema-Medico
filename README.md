@@ -40,4 +40,4 @@ Para popular o banco de dados com as especialidades médicas, após executar o p
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/c2ad4cf0fb71327841b1?action=collection%2Fimport)
 
-## Test
+## Testes
