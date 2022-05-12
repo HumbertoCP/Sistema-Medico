@@ -3,10 +3,6 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class PopulateSpecialites1652307664012 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        console.log('Funcionou o migration!!')
-        /* await queryRunner.query(
-            'CREATE TABLE speciality_model (id int, speciality varchar(255)), primary key (id)'
-        ) */
         await queryRunner.query(
             `INSERT INTO speciality_model (id, speciality) VALUES ('1', 'Alergologia');`,
         );
@@ -36,5 +32,4 @@ export class PopulateSpecialites1652307664012 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         'DELETE FROM speciality_model;'
     }
-
 }
