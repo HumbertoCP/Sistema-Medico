@@ -49,7 +49,7 @@ export class DoctorController {
             doctor.street = adressResponse.logradouro
 
             // Receives de ID from speciality previusly registered => "specialityID": [1, 2, 3, 4]
-            doctor.speciality = await Promise.all(body.specialityID.map(async (element: number) => {
+            if(body.specialityID){doctor.speciality = await Promise.all(body.specialityID.map(async (element: number) => {
 
                 // Search this id on the table of specialty and returns to doctor.speciality
                 let spec = await getRepository(SpecialityModel)
@@ -58,13 +58,13 @@ export class DoctorController {
                     .getMany()
 
                 let specialities = instanceToPlain(spec)[0] // doctor.speciality need a object so instanceToPlain turns SpecialityModel into object, the [0] is because it returns an array of 1 item only
-                
-                if(specialities == null){
+
+                if (specialities == null) {
                     throw new Error('O médico contém alguma(s) especialidade(s) inexistente(s)!')
                 }
 
                 return specialities
-            }))
+            }))}
 
             const result = await this.model.save(doctor)
             res.send({
@@ -86,7 +86,6 @@ export class DoctorController {
         @Param('id', ParseIntPipe) id: number,
     ): Promise<any> {
         try {
-
             const doctor = await getRepository(DoctorModel)
                 .createQueryBuilder("doctor_model")
                 .leftJoinAndSelect("doctor_model.speciality", "speciality_model")
@@ -113,31 +112,33 @@ export class DoctorController {
 
     @Get()
     public async getAll(@Req() request, @Res() res,): Promise<any> {
-        try{
-            let speciality_id = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] // Needs refactoring
+        try {
+            let speciality_id
             if (request.query.speciality_id) {
                 speciality_id = request.query.speciality_id
                 delete request.query.speciality_id
             }
 
             let doctor
-            if(speciality_id){
+            if (speciality_id) {
                 doctor = await getRepository(DoctorModel)
-                .createQueryBuilder("doctor_model")
-                .leftJoinAndSelect("doctor_model.speciality", `speciality_model`)
-                .where("doctor_model.isActive = 1")
-                .andWhere(`speciality_model.id  IN (${speciality_id})`)
-                .andWhere(request.query)
-                .getMany()
+                    .createQueryBuilder("doctor_model")
+                    .leftJoinAndSelect("doctor_model.speciality", `speciality_model`)
+                    .where("doctor_model.isActive = 1")
+                    .andWhere(`speciality_model.id  IN (${speciality_id})`)
+                    .andWhere(request.query)
+                    .getMany()
             } else {
                 doctor = await getRepository(DoctorModel)
-                .createQueryBuilder("doctor_model")
-                .leftJoinAndSelect("doctor_model.speciality", `speciality_model`)
-                .where("doctor_model.isActive = 1")
-                .andWhere(request.query)
-                .getMany()
+                    .createQueryBuilder("doctor_model")
+                    .leftJoinAndSelect("doctor_model.speciality", `speciality_model`)
+                    .where("doctor_model.isActive = 1")
+                    .andWhere(request.query)
+                    .getMany()
             }
-            
+
+            console.log(doctor)
+
             res.send({
                 status: 'success',
                 data: doctor
@@ -154,7 +155,7 @@ export class DoctorController {
     @Patch(':id')
     public async update(
         @Param('id', ParseIntPipe) id: number,
-        @Body() body: DoctorSchema,
+        @Body() body: Partial<DoctorSchema>,
         @Res() res
     ): Promise<any> {
         try {
@@ -169,10 +170,13 @@ export class DoctorController {
             }
 
             await this.model.update({ id }, body);
+            
 
             res.send({
                 status: 'success',
-                data: doctor
+                data: {
+                    message: 'Alteração cadastrada com sucesso!'
+                }
             })
         }
         catch (err) {
