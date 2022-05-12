@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createQueryBuilder, getRepository, Repository } from 'typeorm';
-import { DoctorModel } from 'src/models/doctor.model';
-import { DoctorSchema } from 'src/schemas/doctor.schema';
+import { DoctorModel } from './../models/doctor.model';
+import { DoctorSchema } from './../schemas/doctor.schema';
 import { instanceToPlain } from 'class-transformer';
 import { ApiResponse } from '@nestjs/swagger';
 
@@ -136,8 +136,6 @@ export class DoctorController {
                     .andWhere(request.query)
                     .getMany()
             }
-
-            console.log(doctor)
 
             res.send({
                 status: 'success',
