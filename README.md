@@ -22,15 +22,13 @@ Para clonar o projeto:
 
 ``git clone https://github.com/HumbertoCP/Sistema-Medico``
 
-### Variáveis de ambiente
+Na pasta raiz do projeto, crie um arquivo chamado ``.env`` e nele insira:
 
-  Na pasta raiz do projeto, crie um arquivo chamado ``.env`` e nele insira:
-
-  ``DB_USERNAME=<O nome do seu banco aqui>``<br>
-  ``DB_PASSWROD=<A senha do seu banco aqui>``
+``DB_USERNAME=<O nome do seu banco aqui>``<br>
+``DB_PASSWROD=<A senha do seu banco aqui>``
 
 
-  O docker-compose irá criar um banco com as credenciais que foram passadas, e posteriormente, elas serão usadas para o login
+O docker-compose irá criar um banco com as credenciais que foram passadas, e posteriormente, elas serão usadas para o login
 
 Tendo em sua máquina o Docker, Node.JS e o MySQL instalados, execute o comando:
 
