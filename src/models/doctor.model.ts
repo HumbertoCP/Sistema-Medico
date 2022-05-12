@@ -46,7 +46,7 @@ export class DoctorModel {
     @BeforeInsert()
     beforeInsert(){
         console.log('chegou no before insert')
-        if(this.speciality.length < 2){
+        if(!this.speciality || this.speciality.length < 2){
             throw new Error('Um médico precisa ter no mínimo duas especialidades')
         }     
         console.log('saiu no before insert')     
